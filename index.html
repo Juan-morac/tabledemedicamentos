@@ -1,0 +1,508 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Antimicrobianos Endovenosos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f9f9f9;
+    }
+    h1 {
+      color: #2c3e50;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .medicamento {
+      background-color: #fff;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .titulo {
+      font-size: 20px;
+      font-weight: bold;
+      color: #34495e;
+      margin-bottom: 10px;
+    }
+    .campo {
+      margin-bottom: 5px;
+    }
+    .label {
+      font-weight: bold;
+      color: #555;
+    }
+  
+.recomendacion {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 14px;
+}
+.recomendacion.alto {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+.recomendacion.moderado {
+  background-color: #fff3cd;
+  color: #856404;
+}
+.recomendacion.bajo {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+</style>
+</head>
+<body>
+
+<h1>Buscador de Medicamentos Antimicrobianos EV</h1>
+<input type="text" id="buscador" placeholder="Escriba el nombre del medicamento...">
+<div id="resultados"></div>
+
+<script>
+  const medicamentos = [
+  {
+    "nombre": "Aciclovir 250 mg Aciclovir 500 mg",
+    "reconstitucion": "Solvente incluido en envase o Aciclovir 250 mg 10 mL Aciclovir 500 mg 20 mL   SF0.9% o SG5%",
+    "dilucion": "100 mL SF0.9% o SG5% No exceder 5 mg/mL",
+    "velocidad": "1 h",
+    "estabilidad": "TA: 24 h",
+    "ph": "10,5-11,6",
+    "osmolaridad": "316 – 3191",
+    "riesgo": "Alto"
+  },
+  {
+    "nombre": "Amikacina 100 mg Amikacina 500 mg",
+    "reconstitucion": "No requiere solvente",
+    "dilucion": "100 - 200 mL SF0.9% – SG 5%",
+    "velocidad": "30-60 min",
+    "estabilidad": "TA: 24 h",
+    "ph": "3,5-5,5",
+    "osmolaridad": "349",
+    "riesgo": "Moderado"
+  },
+  {
+    "nombre": "Ampicilina 500 mg",
+    "reconstitucion": "Agua para inyectable 5 mL para 500 mg",
+    "dilucion": "50 mL - 100 mL SF0.9% No exceder 30 mg/mL",
+    "velocidad": "Bolo: 10- 15 min IV: 30-60 min No exceder 100 mg/min",
+    "estabilidad": "TA: 8 h",
+    "ph": "8-10",
+    "osmolaridad": "372- 620",
+    "riesgo": "Alto"
+  },
+  {
+    "nombre": "Ampicilina/sulbactam 1000 mg / 500 mg",
+    "reconstitucion": "Agua para inyectable",
+    "dilucion": "50 mL - 100 mL  SF0.9%",
+    "velocidad": "Bolo: 10- 15 min Infusión IV: 15-30 min",
+    "estabilidad": "RE: 24 h",
+    "ph": "8-10",
+    "osmolaridad": "400",
+    "riesgo": "Alto"
+  },
+  {
+    "nombre": "Anfotericina b DESOXICOLATO  50 mg (convencional)",
+    "reconstitucion": "10 mL  Agua para inyectable",
+    "dilucion": "500 mL SG5% Vía Periférica: 0,1 mg/mL Vía Central: 0,25-0,5 mg/mL",
+    "velocidad": "2-6 h",
+    "estabilidad": "Utilizar una vez diluido y proteger de la luz.",
+    "ph": "5,0-6,0",
+    "osmolaridad": "256",
+    "riesgo": "Bajo"
+  },
+  {
+    "nombre": "Anfotericina b  50 mg LIPOSOMAL",
+    "reconstitucion": "12 mL Agua para inyectable (4mg/mL)",
+    "dilucion": "25- 250 mL SG5% (0,2 – 2 mg/mL)",
+    "velocidad": "30-60 min",
+    "estabilidad": "No disponible",
+    "ph": "No disponible",
+    "osmolaridad": "280",
+    "riesgo": "Bajo"
+  },
+  {
+    "nombre": "Anidulafungina  100 mg",
+    "reconstitucion": "30 mL Agua para inyectable",
+    "dilucion": "100 mL SG5% o SF 0.9% No exceder 0,77 mg/mL",
+    "velocidad": "90 min,  no exceder  1,1 mg/min",
+    "estabilidad": "RE: 24 h",
+    "ph": "3,5-5,5",
+    "osmolaridad": "No disponible",
+    "riesgo": "Bajo"
+  },
+  {
+    "nombre": "Caspofungina 70 mg Caspofungina 50 mg",
+    "reconstitucion": "10,5 mL Agua para inyectable o SF0.9%",
+    "dilucion": "250 mL SF0.9%",
+    "velocidad": "Infusión IV prolongada durante 60 min",
+    "estabilidad": "Reconstitución TA: 1 h a  Diluido: 48 h entre 2-8 °C",
+    "ph": "6,6",
+    "osmolaridad": "309",
+    "riesgo": "Bajo"
+  },
+  {
+    "nombre": "Cefazolina  1 gr",
+    "reconstitucion": "2,5 mL  Agua para inyectables",
+    "dilucion": "IV Directo: 5 mL SF0.9% SG5% 50-100 mL SF0.9%, SG5%",
+    "velocidad": "IV Directo: 5 min 30-60 min",
+    "estabilidad": "TA: 24 h",
+    "ph": "4,5-7",
+    "osmolaridad": "317-351",
+    "riesgo": "Bajo"
+  },
+  {
+    "nombre": "Cefepime  1 g",
+    "reconstitucion": "10 mL Agua para inyectables",
+    "dilucion": "50-100 mL  SF0.9%, SG5%",
+    "velocidad": "IV: 30 min",
+    "estabilidad": "TA: 12 h  RE: 24 h",
+    "ph": "4-6",
+    "osmolaridad": "307",
+    "riesgo": "Bajo"
+  },
+  {
+    "nombre": "Cefotaxima  1g",
+    "reconstitucion": "4 mL  Agua para inyectables",
+    "dilucion": "50 mL– 100 mL SF0.9%, SG5%",
+    "velocidad": "IV:15-60 min",
+    "estabilidad": "TA: 24 h RE.: 7-10 días",
+    "ph": "5-7,5",
+    "osmolaridad": "344-357",
+    "riesgo": "Bajo"
+  },
+  {
+    "nombre": "Ceftazidima  1 g",
+    "reconstitucion": "10 mL  Agua para inyectables",
+    "dilucion": "25 -100 mL  SF0.9%, SG5%",
+    "velocidad": "IV :30-60 min",
+    "estabilidad": "TA: 24 h RE: 7 días",
+    "ph": "5 -8",
+    "osmolaridad": "240-330",
+    "riesgo": "Bajo"
+  },
+  {
+    "nombre": "Ceftazidima/Avibactam 2 g /0.5 g",
+    "reconstitucion": "10 mL  Agua para inyectables",
+    "dilucion": "50-250 mL  SF0.9%, SG5%",
+    "velocidad": "IV:120 min",
+    "estabilidad": "TA: 30 min",
+    "ph": "6.73",
+    "osmolaridad": "386",
+    "riesgo": "Bajo"
+  },
+  {
+    "nombre": "Ceftriaxona  1g",
+    "reconstitucion": "10 mL  Agua para inyectables",
+    "dilucion": "25-100 mL SF0.9%, SG5% (no exceder los 40mg/mL)",
+    "velocidad": "IV: 30 min",
+    "estabilidad": "TA: 24 h",
+    "ph": "6,6-6,7",
+    "osmolaridad": "3509",
+    "riesgo": "Bajo"
+  },
+  {
+    "nombre": "Ciprofloxacino  200 mg",
+    "reconstitucion": "No procede",
+    "dilucion": "No procede",
+    "velocidad": "IV 200 mg: 60 min IV 400 mg: 120 min",
+    "estabilidad": "No disponible",
+    "ph": "3,3-4,6",
+    "osmolaridad": "285",
+    "riesgo": "Moderado"
+  },
+  {
+    "nombre": "Clindamicina  600 mg",
+    "reconstitucion": "No procede",
+    "dilucion": "300 mg - 600 mg en 50 mL  900 mg: 50-100 mL  1200 mg: 100 mL SG5%",
+    "velocidad": "IV: 300 mg:10 min 600 mg:20 min 900 mg: 30 min  1200 mg: 60 min  No exceder 30 mg/min",
+    "estabilidad": "TA: 24 h",
+    "ph": "6,3  (5,5 - 7,0)",
+    "osmolaridad": "294",
+    "riesgo": "Bajo"
+  },
+  {
+    "nombre": "Cloxacilina  500 mg",
+    "reconstitucion": "10 mL  Agua para inyectables",
+    "dilucion": "50-100 mL  SG5%, SF0.9%",
+    "velocidad": "Bolo durante 3-5 min  IV: 30-60 min",
+    "estabilidad": "Administrar Inmediatamente",
+    "ph": "8-10",
+    "osmolaridad": "368",
+    "riesgo": "Moderado"
+  },
+  {
+    "nombre": "COLISTIN  Colistimetato de sodio  240 mg = 100 mg Colistin 3 millones UI de colistina base",
+    "reconstitucion": "2 mL  Agua para inyectables",
+    "dilucion": "100 mL SF0.9%, SG5%",
+    "velocidad": "IV: 30 min - 1 hora",
+    "estabilidad": "Administrar Inmediatamente",
+    "ph": "6,5-8,5",
+    "osmolaridad": "294-310",
+    "riesgo": "Bajo"
+  },
+  {
+    "nombre": "Daptomicina  500 mg",
+    "reconstitucion": "10 mL  SF 0.9%",
+    "dilucion": "50 mL  SF0.9%",
+    "velocidad": "IV: 30 min.",
+    "estabilidad": "TA: 12 h Ref.: 24 h",
+    "ph": "4-5",
+    "osmolaridad": "289-310",
+    "riesgo": "Moderado"
+  },
+  {
+    "nombre": "Eritromicina  1g lactobionato",
+    "reconstitucion": "20 mL Agua para inyectables",
+    "dilucion": "200 -1000 mL SF0.9%  (1-5 mg/mL)",
+    "velocidad": "IV: 20-60 min",
+    "estabilidad": "TA: 8 h Ref.: 24 h",
+    "ph": "7 (6,5-7,7)",
+    "osmolaridad": "291",
+    "riesgo": "Bajo"
+  },
+  {
+    "nombre": "Ertapenem  1 gr",
+    "reconstitucion": "10 mL Agua para inyectables",
+    "dilucion": "50 mL SF0.9% (20 mg/mL)",
+    "velocidad": "IV: 30 min",
+    "estabilidad": "TA: 6 h RE.: 24 h",
+    "ph": "7,5",
+    "osmolaridad": "419",
+    "riesgo": "Bajo"
+  },
+  {
+    "nombre": "Fluconazol  400 mg/200 mL",
+    "reconstitucion": "No procede",
+    "dilucion": "No procede",
+    "velocidad": "IV: 120 min",
+    "estabilidad": "Uso inmediato",
+    "ph": "4-8",
+    "osmolaridad": "315",
+    "riesgo": "Moderado"
+  },
+  {
+    "nombre": "Ganciclovir 500 mg",
+    "reconstitucion": "10 mL Agua para inyectables",
+    "dilucion": "100 - 250 mL  SF0.9%, SG 5%. No exceder 10 mg/mL",
+    "velocidad": "IV: mínimo en 60 min",
+    "estabilidad": "RE: 7 días  1-10 mg/mL en  SF 0,9 % o SG 5 %",
+    "ph": "11",
+    "osmolaridad": "320",
+    "riesgo": "Alto"
+  },
+  {
+    "nombre": "Gentamicina  80 mg",
+    "reconstitucion": "No procede",
+    "dilucion": "50-200 mL SF0.9% SG5% No exceder 1 mg/mL",
+    "velocidad": "IV: 30-60 min",
+    "estabilidad": "TA: 24 h",
+    "ph": "3-5",
+    "osmolaridad": "280-290",
+    "riesgo": "Moderado"
+  },
+  {
+    "nombre": "Imipenem cilastatina 500 mg",
+    "reconstitucion": "10 mL  SF 0.9%, SG5%",
+    "dilucion": "500 mg en 100 mL 0.9% SG5% (5 mg/mL)",
+    "velocidad": "IV: 4 h",
+    "estabilidad": "TA:4 h SG5% TA:10 h SF0.9%",
+    "ph": "6,5-8,5",
+    "osmolaridad": "368",
+    "riesgo": "Moderado"
+  },
+  {
+    "nombre": "Isoniazida  300 mg",
+    "reconstitucion": "5 mL  Agua para inyectable",
+    "dilucion": "20-50 mL SF0.9%, SG5%",
+    "velocidad": "Bolo: 10-15 min IV: 60 min",
+    "estabilidad": "No disponible",
+    "ph": "No disponible",
+    "osmolaridad": "No  disponible",
+    "riesgo": "Riesgo alto"
+  },
+  {
+    "nombre": "Levofloxacino  500 mg",
+    "reconstitucion": "No procede",
+    "dilucion": "No procede",
+    "velocidad": "IV 500 mg: 60 min  IV 750 mg: 90 min",
+    "estabilidad": "Uso inmediato",
+    "ph": "3,8-5,8",
+    "osmolaridad": "250",
+    "riesgo": "Bajo"
+  },
+  {
+    "nombre": "Linezolid  600 mg/300 mL",
+    "reconstitucion": "No procede",
+    "dilucion": "No procede",
+    "velocidad": "IV: 30-120 min",
+    "estabilidad": "Uso inmediato",
+    "ph": "4,8",
+    "osmolaridad": "290",
+    "riesgo": "Moderado"
+  },
+  {
+    "nombre": "Metronidazol 500 mg/100 mL",
+    "reconstitucion": "No procede",
+    "dilucion": "No procede",
+    "velocidad": "IV: 30-60 min",
+    "estabilidad": "Uso inmediato",
+    "ph": "5-7,0",
+    "osmolaridad": "310",
+    "riesgo": "Moderado"
+  },
+  {
+    "nombre": "Meropenem  500 mg,  1000 mg",
+    "reconstitucion": "10-20 mL Agua para inyectables",
+    "dilucion": "500 mg en 100 mL SF 0.9% 1 g en 200 mL SF 0.9% (5 -50 mg/mL)",
+    "velocidad": "IV: 15-30 min SG5% IV: 1-3 h SF 0.9%",
+    "estabilidad": "Inmediatamente SG5% 1-3 h en SF 0.9%",
+    "ph": "7,3-8,3",
+    "osmolaridad": "300",
+    "riesgo": "Bajo"
+  },
+  {
+    "nombre": "Penicilina sódica 1 millón y  2 millones UI",
+    "reconstitucion": "5 mL  Agua para inyectables",
+    "dilucion": "50-1000 mL SF0.9% (100 millón UI/mL)",
+    "velocidad": "IV directa: 5 min IV:15-30 min",
+    "estabilidad": "TA: 24 h",
+    "ph": "6-8,5",
+    "osmolaridad": "420",
+    "riesgo": "Moderado"
+  },
+  {
+    "nombre": "Piperacilina-tazobactam 4.5 g",
+    "reconstitucion": "20 mL SF 0.9% Agua para inyectables",
+    "dilucion": "50-100 mL SG 5%",
+    "velocidad": "4 h",
+    "estabilidad": "TA: 12 h",
+    "ph": "5,1-5,4",
+    "osmolaridad": "445",
+    "riesgo": "Moderado"
+  },
+  {
+    "nombre": "Rifampicina  600 mg",
+    "reconstitucion": "10 mL  Agua para inyectables",
+    "dilucion": "100 mL SF0.9%, SG5% 500 mL SF0.9%, SG5% (VVP) No exceda 6 mg/mL",
+    "velocidad": "CVC: 30 min  VVP: 2-3 h",
+    "estabilidad": "TA:6 h SF 0.9% TA: 8 h SG5%",
+    "ph": "No disponible",
+    "osmolaridad": "No disponible",
+    "riesgo": "Riesgo alto"
+  },
+  {
+    "nombre": "Sulfametoxazol-Trimetoprim  400/80 MG  AM (5 ML)",
+    "reconstitucion": "No procede",
+    "dilucion": "SF0.9% SG5% 1 AM (5ML): 125 mL 2 AM (10 ML): 250 mL 3 AM (15ML):500 mL",
+    "velocidad": "IV: 30-90 min",
+    "estabilidad": "TA: 6 h",
+    "ph": "10",
+    "osmolaridad": "541",
+    "riesgo": "Alto"
+  },
+  {
+    "nombre": "Tigeciclina  50 mg",
+    "reconstitucion": "5.3 mL SF 0.9%, SG 5%",
+    "dilucion": "100 mL  SF 0.9%, SG 5%",
+    "velocidad": "IV: 30-60 min",
+    "estabilidad": "TA: 6 h",
+    "ph": "5,3",
+    "osmolaridad": "270-281",
+    "riesgo": "Bajo"
+  },
+  {
+    "nombre": "Vancomicina 500 mg 1000 mg",
+    "reconstitucion": "20 mL Agua para inyectables",
+    "dilucion": "1 g en 100-200 mL SF 0.9%, SG 5% No exceder 5 mg/mL Restricción volumen: 10mg/mL",
+    "velocidad": "No exceder 10mg/min",
+    "estabilidad": "RE: 24 h",
+    "ph": "2,5-4,5",
+    "osmolaridad": "290",
+    "riesgo": "Alto"
+  },
+  {
+    "nombre": "Voriconazol 200 mg",
+    "reconstitucion": "20 mL Agua para inyectables",
+    "dilucion": "100-250 mL SF 0.9%, SG5%",
+    "velocidad": "IV: 60-120 min  (3 mg/kg/h)",
+    "estabilidad": "RE: 24 h",
+    "ph": "6-7",
+    "osmolaridad": "No disponible",
+    "riesgo": "Medio"
+  }
+];
+
+  const buscador = document.getElementById('buscador');
+  const resultados = document.getElementById('resultados');
+
+
+function obtenerRecomendacion(riesgo) {
+  const texto = riesgo.toLowerCase();
+  if (texto.includes("alto"))
+    return "🔴 Se recomienda usar un catéter Midline largo.";
+  if (texto.includes("moderado") || texto.includes("medio"))
+    return "🟡 Se recomienda usar un catéter Midline largo o corto. Evaluar duración del tratamiento.";
+  if (texto.includes("bajo"))
+    return "🟢 Se recomienda usar un catéter venoso periférico corto o con sistema integrado (NEXIVA). Evaluar duración del tratamiento.";
+  return "";
+}
+
+
+
+function obtenerColorRiesgo(riesgo) {
+  const texto = riesgo.toLowerCase();
+  if (texto.includes("alto")) return "#f8d7da";       // rojo claro
+  if (texto.includes("moderado")) return "#fff3cd";   // amarillo claro
+  if (texto.includes("bajo")) return "#d4edda";        // verde claro
+  return "#f0f0f0"; // gris claro por defecto
+}
+
+
+  function textoRiesgo(riesgo) {
+  const texto = riesgo.toLowerCase();
+  if (texto.includes("alto")) return "alto";
+  if (texto.includes("moderado") || texto.includes("medio")) return "moderado";
+  if (texto.includes("bajo")) return "bajo";
+  return "";
+}
+
+function mostrarResultados(filtro) {
+    resultados.innerHTML = '';
+    medicamentos
+      .filter(m => m.nombre.toLowerCase().includes(filtro.toLowerCase()))
+      .forEach(m => {
+        const div = document.createElement('div');
+        div.className = 'medicamento';
+div.style.backgroundColor = obtenerColorRiesgo(m.riesgo);
+        div.innerHTML = `
+          <div class="titulo">${m.nombre}</div>
+          <div class="campo"><span class="label">Reconstitución:</span> ${m.reconstitucion}</div>
+          <div class="campo"><span class="label">Dilución:</span> ${m.dilucion}</div>
+          <div class="campo"><span class="label">Velocidad:</span> ${m.velocidad}</div>
+          <div class="campo"><span class="label">Estabilidad:</span> ${m.estabilidad}</div>
+          <div class="campo"><span class="label">pH:</span> ${m.ph}</div>
+          <div class="campo"><span class="label">Osmolaridad:</span> ${m.osmolaridad}</div>
+          <div class="campo"><span class="label">Riesgo:</span> ${m.riesgo}<div class="recomendacion ${textoRiesgo(m.riesgo)}">${obtenerRecomendacion(m.riesgo)}</div></div>
+        `;
+        resultados.appendChild(div);
+      });
+  }
+
+  buscador.addEventListener('input', e => mostrarResultados(e.target.value));
+  mostrarResultados('');
+</script>
+
+</body>
+</html>
