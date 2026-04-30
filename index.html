@@ -86,11 +86,16 @@ const iconByCat = {Antimicrobiano:"💊",Vasoactiva:"💉",Sedoanalgesia:"🟣",
 
 function initSupabase(){
   try{
-    if(window.supabase && window.SUPABASE_CONFIG && SUPABASE_CONFIG.url && SUPABASE_CONFIG.anonKey){
-      supabaseClient = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+    if(window.supabase && window.SUPABASE_CONFIG && window.SUPABASE_CONFIG.url && window.SUPABASE_CONFIG.anonKey){
+      supabaseClient = window.supabase.createClient(
+        window.SUPABASE_CONFIG.url,
+        window.SUPABASE_CONFIG.anonKey
+      );
       supabaseReady = true;
     }
-  }catch(e){ supabaseReady = false; }
+  }catch(e){
+    supabaseReady = false;
+  }
 }
 initSupabase();
 
